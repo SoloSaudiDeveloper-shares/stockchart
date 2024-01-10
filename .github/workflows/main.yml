@@ -41,3 +41,14 @@ jobs:
 
       - name: Run Selenium Script
         run: python main.py # Make sure this script updates OutputResults.csv
+
+
+      - name: Commit and Push Output File
+        env:
+          ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
+        run: |
+          git config --global user.name 'SoloSaudiDeveloper-shares'
+          git config --global user.email 'm.alfayfi101@gmail.com'
+          git add .  # Add all new or modified files
+          git commit -m "Update with new screenshots" || echo "No changes to commit"
+          git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/SoloSaudiDeveloper-shares/stockchart.git main
