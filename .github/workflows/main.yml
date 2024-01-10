@@ -42,21 +42,14 @@ jobs:
         sudo ln -sf /usr/local/share/chromedriver /usr/bin/chromedriver
 
     - name: Run Selenium Script
-      run: |
-        # Assuming your Python script saves screenshots with dynamic filenames
-        python main.py
+      run: python main.py
 
-    - name: Move Screenshot Files to Repository Directory
-      run: |
-        # Move all screenshot files (assuming they have a common extension, e.g., .png)
-        find . -type f -name "*.png" -exec mv {} $GITHUB_WORKSPACE \;
-
-    - name: Commit and Push Screenshot Files
+    - name: Commit and Push Output File
       env:
         ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
         git config --global user.name 'SoloSaudiDeveloper-shares'
         git config --global user.email 'm.alfayfi101@gmail.com'
-        git add .
-        git commit -m "Add screenshot files" || echo "No changes to commit"
+        git add .  # Add all new or modified files
+        git commit -m "Update with new screenshots" || echo "No changes to commit"
         git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/SoloSaudiDeveloper-shares/stockchart.git main
