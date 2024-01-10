@@ -58,7 +58,8 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
             # Introduce a delay to allow time for dynamic content to load
             time.sleep(5)  # Adjust the delay as needed
 
-            filename = f"{folder_path}/screenshot_{symbol_number}.png"
+            # Modify the filename to include "financials_dividends_" and the symbol
+            filename = f"{folder_path}/financials_dividends_{symbol_number}.png"
             element.screenshot(filename)
             print(f"Screenshot saved: {filename}")
             return  # Screenshot captured successfully
