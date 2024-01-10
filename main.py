@@ -79,7 +79,7 @@ def process_financials_overview(number, browser, folder_path):
     browser.get(url)
 
     screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[2]/section[3]/div[2]/div[1]/div[2]"
-    take_screenshot(browser, screenshot_xpath, number, folder_path, "financials_overview_Performance")
+    take_screenshot(browser, screenshot_xpath, number, folder_path)
     
 # Function to process the URL and capture a screenshot
 def process_url(number, browser, folder_path):
