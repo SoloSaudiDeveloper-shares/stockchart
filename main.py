@@ -71,7 +71,16 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
             break
     
     print(f"Failed to capture screenshot for symbol {symbol_number}")
+    
+# Function to process the URL and capture "financials-overview" screenshot
+def process_financials_overview(number, browser, folder_path):
+    print(f"Processing symbol {number} for financials overview...")
+    url = f"https://www.tradingview.com/symbols/TADAWUL-{number}/financials-overview/"
+    browser.get(url)
 
+    screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[2]/section[3]/div[2]/div[1]/div[2]"
+    take_screenshot(browser, screenshot_xpath, number, folder_path, "financials_overview_Performance")
+    
 # Function to process the URL and capture a screenshot
 def process_url(number, browser, folder_path):
     print(f"Processing symbol {number}...")
@@ -109,6 +118,7 @@ if symbols:
     for number in symbols:
         folder_path = create_or_locate_folder(number)
         process_url(number, browser, folder_path)
+        process_financials_overview(number, browser, folder_path)
 else:
     print("No symbols to process.")
 
