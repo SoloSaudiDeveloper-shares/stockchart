@@ -1,8 +1,8 @@
 import csv
 import os
 import requests
-import time  # Add this line to import the 'time' module
-
+import time
+from urllib.parse import urlparse
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -50,27 +50,37 @@ def create_or_locate_folder(symbol_number):
     return folder_path
 
 def take_screenshot(browser, xpath, symbol_number, folder_path):
-    retries = 3  # Number of retries to capture the screenshot
-    for _ in range(retries):
-        try:
-            element = WebDriverWait(browser, 10).until(
-                EC.presence_of_element_located((By.XPATH, xpath)))
+    try:
+        element = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.XPATH, xpath)))
+    except Exception:
+        print("Element not found, attempting to scroll.")
+        body = browser.find_element(By.TAG_NAME, "body")
+        for _ in range(10):  # Adjust the number of scrolls as necessary
+            body.send_keys(Keys.PAGE_DOWN)
+            try:
+                element = WebDriverWait(browser, 10).until(
+                    EC.presence_of_element_located((By.XPATH, xpath)))
+                break
+            except Exception:
+                continue
+        else:
+            print(
+                f"Element with XPath {xpath} not found for symbol {symbol_number} after scrolling."
+            )
+            return
 
-            # Introduce a delay to allow time for dynamic content to load
-            time.sleep(5)  # Adjust the delay as needed
-
-            filename = f"{folder_path}/screenshot_{symbol_number}.png"
-            element.screenshot(filename)
-            print(f"Screenshot saved: {filename}")
-            return  # Screenshot captured successfully
-        except StaleElementReferenceException:
-            print("Stale element reference, retrying...")
-            continue
-        except Exception as e:
-            print(f"Error capturing screenshot: {str(e)}")
-            break
+    # Get the base URL without protocol
+    url = browser.current_url
+    parsed_url = urlparse(url)
+    base_url = parsed_url.netloc
     
-    print(f"Failed to capture screenshot for symbol {symbol_number}")
+    # Generate the filename
+    filename = f"{base_url}_{symbol_number}.png"
+    screenshot_path = os.path.join(folder_path, filename)
+    
+    element.screenshot(screenshot_path)
+    print(f"Screenshot saved: {screenshot_path}")
 
 # Function to process the URL and capture a screenshot
 def process_url(number, browser, folder_path):
@@ -78,7 +88,7 @@ def process_url(number, browser, folder_path):
     url = f"https://www.tradingview.com/symbols/TADAWUL-{number}/financials-dividends/"
     browser.get(url)
 
-    screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]/div/div[1]"
+    screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]"
     take_screenshot(browser, screenshot_xpath, number, folder_path)
 
 # Initialize Selenium WebDriver
