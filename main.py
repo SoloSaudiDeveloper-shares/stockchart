@@ -80,7 +80,7 @@ def process_financials_overview(number, browser, folder_path):
     screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[2]/section[3]/div[2]/div[1]/div[2]"
     filename = f"{folder_path}/financials_overview_Performance_{number}.png"
     take_screenshot(browser, screenshot_xpath, filename)
-    
+
 # Function to process the URL and capture a screenshot
 def process_url(number, browser, folder_path):
     print(f"Processing symbol {number}...")
@@ -88,7 +88,8 @@ def process_url(number, browser, folder_path):
     browser.get(url)
 
     screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]"
-    take_screenshot(browser, screenshot_xpath, number, folder_path)
+    filename = f"{folder_path}/financials_dividends_{number}.png"
+    take_screenshot(browser, screenshot_xpath, filename)
 
 # Initialize Selenium WebDriver
 chrome_options = Options()
