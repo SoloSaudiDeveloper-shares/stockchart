@@ -1,6 +1,7 @@
 import csv
 import os
 import requests
+import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -51,9 +52,8 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
         element = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.XPATH, xpath)))
         
-        # Wait for the page to be fully loaded
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.TAG_NAME, 'body')))
+        # Introduce a delay to allow time for dynamic content to load
+        time.sleep(5)  # Adjust the delay as needed
     except Exception:
         print("Element not found, attempting to scroll.")
         body = browser.find_element(By.TAG_NAME, "body")
@@ -63,9 +63,8 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
                 element = WebDriverWait(browser, 10).until(
                     EC.presence_of_element_located((By.XPATH, xpath)))
                 
-                # Wait for the page to be fully loaded
-                WebDriverWait(browser, 10).until(
-                    EC.presence_of_element_located((By.TAG_NAME, 'body')))
+                # Introduce a delay to allow time for dynamic content to load
+                time.sleep(5)  # Adjust the delay as needed
                 break
             except Exception:
                 continue
