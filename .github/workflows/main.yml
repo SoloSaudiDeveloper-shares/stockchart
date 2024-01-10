@@ -1,17 +1,13 @@
 name: Selenium Scraper
 
 on:
-
-
-  push:
-    branches:
-      - main  # Replace 'main' with the branch you want to trigger the workflow on
-
+  push: # Trigger on push, you can change this to a schedule
   schedule:
-    - cron: '0 13 * * 0-4'  # Runs at 1 PM UTC, equivalent to 4 PM Riyadh time, from Sunday to Thursday
+    
+  - cron: '0 13 * * 0-4'  # Runs at 1 PM UTC, equivalent to 4 PM Riyadh time, from Sunday to Thursday
   
 permissions:
-  contents: write
+  contents: write  # Allows the workflow to write to the repository
 
 jobs:
   scrape:
@@ -39,8 +35,8 @@ jobs:
 
     - name: Download and Set up ChromeDriver
       run: |
-        CHROME_DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
-        wget -N "https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip" -O chromedriver.zip
+        CHROME_DRIVER_URL="https://drive.google.com/uc?export=download&id=1H6p3Pm9LNlUvBtjCQoeyREJmFdSxnkE_"
+        wget -N $CHROME_DRIVER_URL -O chromedriver.zip
         unzip chromedriver.zip -d ~/
         sudo mv -f ~/chromedriver /usr/local/share/
         sudo chmod +x /usr/local/share/chromedriver
@@ -48,7 +44,7 @@ jobs:
         sudo ln -sf /usr/local/share/chromedriver /usr/bin/chromedriver
 
     - name: Run Selenium Script
-      run: python main.py
+      run: python main.py  # Make sure this script updates OutputResults.csv
 
     - name: Commit and Push Output File
       env:
