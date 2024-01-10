@@ -48,7 +48,7 @@ def create_or_locate_folder(symbol_number):
 
 def take_screenshot(browser, xpath, symbol_number, folder_path):
     try:
-        element = WebDriverWait(browser, 10).until(
+        element = WebDriverWait(browser, 50).until(
             EC.presence_of_element_located((By.XPATH, xpath)))
         
         # Wait for the page to be fully loaded
