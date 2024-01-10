@@ -2,56 +2,42 @@ name: Selenium Scraper
 
 on:
   push: # Trigger on push, you can change this to a schedule
-  schedule:
-    
-  - cron: '0 13 * * 0-4'  # Runs at 1 PM UTC, equivalent to 4 PM Riyadh time, from Sunday to Thursday
-  
-permissions:
-  contents: write  # Allows the workflow to write to the repository
+    schedule:
+    - cron: '0 13 * * 0-4' # Runs at 1 PM UTC, equivalent to 4 PM Riyadh time, from Sunday to Thursday
 
 jobs:
   scrape:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout Repository
-      uses: actions/checkout@v2
+      - name: Checkout Repository
+        uses: actions/checkout@v2
 
-    - name: Set up Python
-      uses: actions/setup-python@v2
-      with:
-        python-version: '3.8'
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.8'
 
-    - name: Install Python Dependencies
-      run: |
-        pip install selenium
-        pip install bs4
-        pip install pydrive
+      - name: Install Python Dependencies
+        run: |
+          pip install selenium
+          pip install bs4
+          pip install pydrive
 
-    - name: Install Google Chrome
-      run: |
-        sudo apt-get update
-        sudo apt-get install -y google-chrome-stable
+      - name: Install Google Chrome
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y google-chrome-stable
 
-    - name: Download and Set up ChromeDriver
-      run: |
-        CHROME_DRIVER_URL="https://drive.google.com/uc?export=download&id=1H6p3Pm9LNlUvBtjCQoeyREJmFdSxnkE_"
-        wget -N $CHROME_DRIVER_URL -O chromedriver.zip
-        unzip chromedriver.zip -d ~/
-        sudo mv -f ~/chromedriver /usr/local/share/
-        sudo chmod +x /usr/local/share/chromedriver
-        sudo ln -sf /usr/local/share/chromedriver /usr/local/bin/chromedriver
-        sudo ln -sf /usr/local/share/chromedriver /usr/bin/chromedriver
+      - name: Download and Set up ChromeDriver
+        run: |
+          CHROME_DRIVER_URL="https://drive.google.com/uc?export=download&id=1H6p3Pm9LNlUvBtjCQoeyREJmFdSxnkE_"
+          wget -N $CHROME_DRIVER_URL -O chromedriver.zip
+          unzip chromedriver.zip -d ~/
+          sudo mv -f ~/chromedriver /usr/local/share/
+          sudo chmod +x /usr/local/share/chromedriver
+          sudo ln -sf /usr/local/share/chromedriver /usr/local/bin/chromedriver
+          sudo ln -sf /usr/local/share/chromedriver /usr/bin/chromedriver
 
-    - name: Run Selenium Script
-      run: python main.py  # Make sure this script updates OutputResults.csv
-
-    - name: Commit and Push Output File
-      env:
-        ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
-      run: |
-        git config --global user.name 'SoloSaudiDeveloper-shares'
-        git config --global user.email 'm.alfayfi101@gmail.com'
-        git add .  # Add all new or modified files
-        git commit -m "Update with new screenshots" || echo "No changes to commit"
-        git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/SoloSaudiDeveloper-shares/stockchart.git main
+      - name: Run Selenium Script
+        run: python main.py # Make sure this script updates OutputResults.csv
