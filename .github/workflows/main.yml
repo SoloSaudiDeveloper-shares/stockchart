@@ -24,6 +24,7 @@ jobs:
           pip install selenium
           pip install bs4
           pip install pydrive
+          pip install requests
 
       - name: Install Google Chrome
         run: |
