@@ -52,7 +52,7 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
             EC.presence_of_element_located((By.XPATH, xpath)))
         
         # Wait for the page to be fully loaded
-        WebDriverWait(browser, 50).until(
+        WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.TAG_NAME, 'body')))
     except Exception:
         print("Element not found, attempting to scroll.")
@@ -64,7 +64,7 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
                     EC.presence_of_element_located((By.XPATH, xpath)))
                 
                 # Wait for the page to be fully loaded
-                WebDriverWait(browser, 50).until(
+                WebDriverWait(browser, 10).until(
                     EC.presence_of_element_located((By.TAG_NAME, 'body')))
                 break
             except Exception:
@@ -85,7 +85,7 @@ def process_url(number, browser, folder_path):
     url = f"https://www.tradingview.com/symbols/TADAWUL-{number}/financials-dividends/"
     browser.get(url)
 
-    screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]/div"
+    screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]"
     take_screenshot(browser, screenshot_xpath, number, folder_path)
 
 # Initialize Selenium WebDriver
