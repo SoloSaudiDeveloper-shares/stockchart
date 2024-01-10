@@ -1,13 +1,11 @@
 name: Selenium Scraper
 
 on:
-  push: # Trigger on push, you can change this to a schedule
   schedule:
-    
-  - cron: '0 13 * * 0-4'  # Runs at 1 PM UTC, equivalent to 4 PM Riyadh time, from Sunday to Thursday
+    - cron: '0 13 * * 0-4'  # Runs at 1 PM UTC, equivalent to 4 PM Riyadh time, from Sunday to Thursday
   
 permissions:
-  contents: write  # Allows the workflow to write to the repository
+  contents: write
 
 jobs:
   scrape:
@@ -35,8 +33,8 @@ jobs:
 
     - name: Download and Set up ChromeDriver
       run: |
-        CHROME_DRIVER_URL="https://drive.google.com/uc?export=download&id=1H6p3Pm9LNlUvBtjCQoeyREJmFdSxnkE_"
-        wget -N $CHROME_DRIVER_URL -O chromedriver.zip
+        CHROME_DRIVER_VERSION=$(curl -s "https://chromedriver.storage.googleapis.com/LATEST_RELEASE")
+        wget -N "https://chromedriver.storage.googleapis.com/$CHROME_DRIVER_VERSION/chromedriver_linux64.zip" -O chromedriver.zip
         unzip chromedriver.zip -d ~/
         sudo mv -f ~/chromedriver /usr/local/share/
         sudo chmod +x /usr/local/share/chromedriver
@@ -44,14 +42,21 @@ jobs:
         sudo ln -sf /usr/local/share/chromedriver /usr/bin/chromedriver
 
     - name: Run Selenium Script
-      run: python main.py  # Make sure this script updates OutputResults.csv
+      run: |
+        # Assuming your Python script saves screenshots with dynamic filenames
+        python main.py
 
-    - name: Commit and Push Output File
+    - name: Move Screenshot Files to Repository Directory
+      run: |
+        # Move all screenshot files (assuming they have a common extension, e.g., .png)
+        find . -type f -name "*.png" -exec mv {} $GITHUB_WORKSPACE \;
+
+    - name: Commit and Push Screenshot Files
       env:
         ACCESS_TOKEN: ${{ secrets.PERSONAL_ACCESS_TOKEN }}
       run: |
         git config --global user.name 'SoloSaudiDeveloper-shares'
         git config --global user.email 'm.alfayfi101@gmail.com'
-        git add OutputResults.csv
-        git commit -m "Update output CSV file" || echo "No changes to commit"
+        git add .
+        git commit -m "Add screenshot files" || echo "No changes to commit"
         git push https://${{ secrets.PERSONAL_ACCESS_TOKEN }}@github.com/SoloSaudiDeveloper-shares/stockchart.git main
