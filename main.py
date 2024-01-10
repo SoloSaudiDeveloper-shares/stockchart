@@ -78,7 +78,7 @@ def process_url(number, browser, folder_path):
     url = f"https://www.tradingview.com/symbols/TADAWUL-{number}/financials-dividends/"
     browser.get(url)
 
-    screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]"
+    screenshot_xpath = "//*[@id='js-category-content']/div[1]/div[1]/div/div/div/div[1]"
     take_screenshot(browser, screenshot_xpath, number, folder_path)
 
 # Initialize Selenium WebDriver
