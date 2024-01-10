@@ -50,6 +50,10 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
     try:
         element = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.XPATH, xpath)))
+        
+        # Wait for the page to be fully loaded
+        WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.TAG_NAME, 'body')))
     except Exception:
         print("Element not found, attempting to scroll.")
         body = browser.find_element(By.TAG_NAME, "body")
@@ -58,6 +62,10 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
             try:
                 element = WebDriverWait(browser, 10).until(
                     EC.presence_of_element_located((By.XPATH, xpath)))
+                
+                # Wait for the page to be fully loaded
+                WebDriverWait(browser, 10).until(
+                    EC.presence_of_element_located((By.TAG_NAME, 'body')))
                 break
             except Exception:
                 continue
