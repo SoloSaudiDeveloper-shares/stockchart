@@ -48,12 +48,12 @@ jobs:
       - name: Organize by Symbols
         run: |
           for file in charts/*.png; do
-            # Extract symbol from the file name (assuming the file name format is something like "symbol_screenshot.png")
-            symbol=$(echo $file | awk -F'/' '{print $2}' | cut -d'_' -f1)
-            if [ ! -d "symbol_folders/$symbol" ]; then
-              mkdir -p "symbol_folders/$symbol"
+            # Extract symbol from the file name (assuming the file name format is something like "screenshot_4344.png")
+            symbol=$(echo $file | cut -d'_' -f2 | cut -d'.' -f1)
+            if [ ! -d "stockchart/charts/$symbol" ]; then
+              mkdir -p "stockchart/charts/$symbol"
             fi
-            mv "$file" "symbol_folders/$symbol/"
+            mv "$file" "stockchart/charts/$symbol/"
           done
 
       - name: Commit and Push Symbol Folders
