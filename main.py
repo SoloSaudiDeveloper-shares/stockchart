@@ -48,7 +48,8 @@ def create_or_locate_folder(symbol_number):
 
     return folder_path
 
-def take_screenshot(browser, xpath, symbol_number, folder_path):
+# Function to take a screenshot and save it with a given filename
+def take_screenshot(browser, xpath, filename):
     retries = 3  # Number of retries to capture the screenshot
     for _ in range(retries):
         try:
@@ -58,8 +59,6 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
             # Introduce a delay to allow time for dynamic content to load
             time.sleep(5)  # Adjust the delay as needed
 
-            # Modify the filename to include "financials_dividends_" and the symbol
-            filename = f"{folder_path}/financials_dividends_{symbol_number}.png"
             element.screenshot(filename)
             print(f"Screenshot saved: {filename}")
             return  # Screenshot captured successfully
@@ -70,8 +69,8 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
             print(f"Error capturing screenshot: {str(e)}")
             break
     
-    print(f"Failed to capture screenshot for symbol {symbol_number}")
-    
+    print(f"Failed to capture screenshot for filename: {filename}")
+
 # Function to process the URL and capture "financials-overview" screenshot
 def process_financials_overview(number, browser, folder_path):
     print(f"Processing symbol {number} for financials overview...")
@@ -79,7 +78,8 @@ def process_financials_overview(number, browser, folder_path):
     browser.get(url)
 
     screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[2]/section[3]/div[2]/div[1]/div[2]"
-    take_screenshot(browser, screenshot_xpath, number, folder_path)
+    filename = f"{folder_path}/financials_overview_Performance_{number}.png"
+    take_screenshot(browser, screenshot_xpath, filename)
     
 # Function to process the URL and capture a screenshot
 def process_url(number, browser, folder_path):
