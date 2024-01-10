@@ -1,7 +1,6 @@
 import csv
 import os
 import requests
-import time
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -49,42 +48,27 @@ def create_or_locate_folder(symbol_number):
     return folder_path
 
 def take_screenshot(browser, xpath, symbol_number, folder_path):
-    try:
-        element = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.XPATH, xpath)))
-        
-        # Introduce a delay to allow time for dynamic content to load
-        time.sleep(5)  # Adjust the delay as needed
-    except StaleElementReferenceException:
-        print("Stale element reference, attempting to locate the element again...")
-        element = WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.XPATH, xpath)))
-        
-        # Introduce a delay to allow time for dynamic content to load
-        time.sleep(5)  # Adjust the delay as needed
-    except Exception:
-        print("Element not found, attempting to scroll.")
-        body = browser.find_element(By.TAG_NAME, "body")
-        for _ in range(10):  # Adjust the number of scrolls as necessary
-            body.send_keys(Keys.PAGE_DOWN)
-            try:
-                element = WebDriverWait(browser, 10).until(
-                    EC.presence_of_element_located((By.XPATH, xpath)))
-                
-                # Introduce a delay to allow time for dynamic content to load
-                time.sleep(5)  # Adjust the delay as needed
-                break
-            except Exception:
-                continue
-        else:
-            print(
-                f"Element with XPath {xpath} not found for symbol {symbol_number} after scrolling."
-            )
-            return
+    retries = 3  # Number of retries to capture the screenshot
+    for _ in range(retries):
+        try:
+            element = WebDriverWait(browser, 10).until(
+                EC.presence_of_element_located((By.XPATH, xpath)))
 
-    filename = f"{folder_path}/screenshot_{symbol_number}.png"
-    element.screenshot(filename)
-    print(f"Screenshot saved: {filename}")
+            # Introduce a delay to allow time for dynamic content to load
+            time.sleep(5)  # Adjust the delay as needed
+
+            filename = f"{folder_path}/screenshot_{symbol_number}.png"
+            element.screenshot(filename)
+            print(f"Screenshot saved: {filename}")
+            return  # Screenshot captured successfully
+        except StaleElementReferenceException:
+            print("Stale element reference, retrying...")
+            continue
+        except Exception as e:
+            print(f"Error capturing screenshot: {str(e)}")
+            break
+    
+    print(f"Failed to capture screenshot for symbol {symbol_number}")
 
 # Function to process the URL and capture a screenshot
 def process_url(number, browser, folder_path):
