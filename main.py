@@ -1,52 +1,46 @@
 import csv
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
-from bs4 import BeautifulSoup
-import re
+
+
+def take_screenshot(browser, xpath, symbol_number):
+  try:
+    element = WebDriverWait(browser, 10).until(
+        EC.presence_of_element_located((By.XPATH, xpath)))
+  except Exception:
+    print("Element not found, attempting to scroll.")
+    body = browser.find_element(By.TAG_NAME, "body")
+    for _ in range(10):  # Adjust the number of scrolls as necessary
+      body.send_keys(Keys.PAGE_DOWN)
+      try:
+        element = WebDriverWait(browser, 2).until(
+            EC.presence_of_element_located((By.XPATH, xpath)))
+        break
+      except Exception:
+        continue
+    else:
+      print(
+          f"Element with XPath {xpath} not found for symbol {symbol_number} after scrolling."
+      )
+      return
+
+  filename = f"screenshot_{symbol_number}.png"
+  element.screenshot(filename)
+  print(f"Screenshot saved: {filename}")
+
 
 def process_url(number, browser):
-    print(f"Processing symbol {number}...")
-    url = f"https://www.tradingview.com/symbols/TADAWUL-{number}/financials-dividends/"
-    browser.get(url)
+  print(f"Processing symbol {number}...")
+  url = f"https://www.tradingview.com/symbols/TADAWUL-{number}/financials-dividends/"
+  browser.get(url)
 
-    primary_xpath_base = "//*[@id='js-category-content']/div[2]/div/div/div[8]/div[2]/div/div[1]/div[{}]"
-    secondary_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]/div/strong"
-    div_index = 1
-    output_data = []
+  screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]/div"
+  take_screenshot(browser, screenshot_xpath, number)
 
-    try:
-        WebDriverWait(browser, 10).until(
-            EC.presence_of_element_located((By.XPATH, primary_xpath_base.format(1))))
-        while True:
-            primary_element_xpath = primary_xpath_base.format(div_index)
-            try:
-                element_html = browser.find_element(
-                    By.XPATH, primary_element_xpath).get_attribute('outerHTML')
-                process_element(element_html, number, output_data)
-                div_index += 1
-            except Exception:
-                break
-    except Exception as e:
-        try:
-            element_html = browser.find_element(
-                By.XPATH, secondary_xpath).get_attribute('outerHTML')
-            process_element(element_html, number, output_data)
-        except Exception:
-            pass
-
-    return output_data
-
-def process_element(element_html, number, output_data):
-    soup = BeautifulSoup(element_html, 'html.parser')
-    element_text = soup.get_text()
-    pattern = r'(\d{1,2}/\d{1,2}/\d{4})|(\d+\.\d+)|(\w+)'
-    matches = re.findall(pattern, element_text)
-    flattened_matches = [item for sublist in matches for item in sublist if item]
-    separated_text = ' '.join(flattened_matches)
-    output_data.append([number, separated_text])
 
 # Initialize Selenium WebDriver
 chrome_options = Options()
@@ -59,36 +53,23 @@ browser = webdriver.Chrome(options=chrome_options)
 # Path to the input CSV file
 csv_file_path = 'Symbols.csv'
 
-# Path to the output CSV file
-output_csv_file_path = 'OutputResults.csv'
-
 # Read symbols from the CSV file
 print("Reading symbols from the CSV file...")
 symbols = []
 try:
-    with open(csv_file_path, newline='') as csvfile:
-        csv_reader = csv.reader(csvfile)
-        next(csv_reader, None)  # Skip the header if there is one
-        symbols = [row[0] for row in csv_reader]
-    print(f"Symbols loaded: {symbols}")
+  with open(csv_file_path, newline='') as csvfile:
+    csv_reader = csv.reader(csvfile)
+    next(csv_reader, None)  # Skip the header if there is one
+    symbols = [row[0] for row in csv_reader]
+  print(f"Symbols loaded: {symbols}")
 except FileNotFoundError:
-    print(f"Error: File not found - {csv_file_path}")
+  print(f"Error: File not found - {csv_file_path}")
 
-# Check if symbols were loaded
-if not symbols:
-    print("No symbols to process.")
+# Process each symbol
+if symbols:
+  for number in symbols:
+    process_url(number, browser)
 else:
-    # Open the output CSV file for writing
-    with open(output_csv_file_path, 'w', newline='', encoding='utf-8') as out_csvfile:
-        csv_writer = csv.writer(out_csvfile)
-        for number in symbols:
-            print(f"Processing symbol: {number}")
-            data = process_url(number, browser)
-            if data:
-                for row in data:
-                    print(f"Writing to CSV: {row}")
-                    csv_writer.writerow(row)
-            else:
-                print(f"No data found for symbol: {number}")
+  print("No symbols to process.")
 
 browser.quit()
