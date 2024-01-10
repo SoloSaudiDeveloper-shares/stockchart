@@ -1,5 +1,6 @@
 import csv
 import os
+import requests
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
@@ -7,7 +8,39 @@ from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
 
-def take_screenshot(browser, xpath, symbol_number):
+# GitHub repository information
+github_username = 'SoloSaudiDeveloper-shares'
+github_repo = 'stockchart'
+github_pat = 'YOUR_PERSONAL_ACCESS_TOKEN'  # Replace with your PAT
+
+def check_and_create_folder(symbol_number):
+    folder_name = str(symbol_number)
+    
+    # Check if the folder exists in the repository
+    url = f'https://api.github.com/repos/{github_username}/{github_repo}/contents/charts/{folder_name}'
+    response = requests.get(url, headers={'Authorization': f'token {github_pat}'})
+    
+    if response.status_code == 200:
+        # Folder exists, no need to create it
+        print(f"Folder '{folder_name}' already exists in the repository.")
+    elif response.status_code == 404:
+        # Folder doesn't exist, create it
+        create_folder_url = f'https://api.github.com/repos/{github_username}/{github_repo}/contents/charts/{folder_name}'
+        data = {
+            "message": f"Create folder for symbol {symbol_number}",
+            "content": "",
+            "branch": "main"
+        }
+        create_response = requests.put(create_folder_url, headers={'Authorization': f'token {github_pat}'}, json=data)
+        
+        if create_response.status_code == 201:
+            print(f"Folder '{folder_name}' created in the repository.")
+        else:
+            print(f"Failed to create folder '{folder_name}' in the repository.")
+    
+    return f'charts/{folder_name}'
+
+def take_screenshot(browser, xpath, symbol_number, folder_path):
     try:
         element = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.XPATH, xpath)))
@@ -28,22 +61,9 @@ def take_screenshot(browser, xpath, symbol_number):
             )
             return
 
-    folder_name = str(symbol_number)
-    folder_path = f"stockchart/charts/{folder_name}"
-    if not os.path.exists(folder_path):
-        os.makedirs(folder_path)
-
     filename = f"{folder_path}/screenshot_{symbol_number}.png"
     element.screenshot(filename)
     print(f"Screenshot saved: {filename}")
-
-def process_url(number, browser):
-    print(f"Processing symbol {number}...")
-    url = f"https://www.tradingview.com/symbols/TADAWUL-{number}/financials-dividends/"
-    browser.get(url)
-
-    screenshot_xpath = "//*[@id='js-category-content']/div[2]/div/div/div[3]/div"
-    take_screenshot(browser, screenshot_xpath, number)
 
 # Initialize Selenium WebDriver
 chrome_options = Options()
@@ -71,7 +91,8 @@ except FileNotFoundError:
 # Process each symbol
 if symbols:
     for number in symbols:
-        process_url(number, browser)
+        folder_path = check_and_create_folder(number)
+        process_url(number, browser, folder_path)
 else:
     print("No symbols to process.")
 
