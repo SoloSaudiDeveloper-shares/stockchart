@@ -8,6 +8,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import StaleElementReferenceException
 
 # GitHub repository information
 github_username = 'SoloSaudiDeveloper-shares'
@@ -49,6 +50,13 @@ def create_or_locate_folder(symbol_number):
 
 def take_screenshot(browser, xpath, symbol_number, folder_path):
     try:
+        element = WebDriverWait(browser, 10).until(
+            EC.presence_of_element_located((By.XPATH, xpath)))
+        
+        # Introduce a delay to allow time for dynamic content to load
+        time.sleep(5)  # Adjust the delay as needed
+    except StaleElementReferenceException:
+        print("Stale element reference, attempting to locate the element again...")
         element = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.XPATH, xpath)))
         
