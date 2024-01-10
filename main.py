@@ -56,7 +56,7 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
         for _ in range(10):  # Adjust the number of scrolls as necessary
             body.send_keys(Keys.PAGE_DOWN)
             try:
-                element = WebDriverWait(browser, 2).until(
+                element = WebDriverWait(browser, 10).until(
                     EC.presence_of_element_located((By.XPATH, xpath)))
                 break
             except Exception:
