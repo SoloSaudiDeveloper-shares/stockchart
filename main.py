@@ -48,11 +48,11 @@ def create_or_locate_folder(symbol_number):
 
 def take_screenshot(browser, xpath, symbol_number, folder_path):
     try:
-        element = WebDriverWait(browser, 50).until(
+        element = WebDriverWait(browser, 10).until(
             EC.presence_of_element_located((By.XPATH, xpath)))
         
         # Wait for the page to be fully loaded
-        WebDriverWait(browser, 10).until(
+        WebDriverWait(browser, 50).until(
             EC.presence_of_element_located((By.TAG_NAME, 'body')))
     except Exception:
         print("Element not found, attempting to scroll.")
@@ -64,7 +64,7 @@ def take_screenshot(browser, xpath, symbol_number, folder_path):
                     EC.presence_of_element_located((By.XPATH, xpath)))
                 
                 # Wait for the page to be fully loaded
-                WebDriverWait(browser, 10).until(
+                WebDriverWait(browser, 50).until(
                     EC.presence_of_element_located((By.TAG_NAME, 'body')))
                 break
             except Exception:
