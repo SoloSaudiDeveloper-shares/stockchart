@@ -1,6 +1,8 @@
 import csv
 import os
 import requests
+import time  # Add this line to import the 'time' module
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
