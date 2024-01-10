@@ -1,6 +1,12 @@
 name: Selenium Scraper
 
 on:
+
+
+  push:
+    branches:
+      - main  # Replace 'main' with the branch you want to trigger the workflow on
+
   schedule:
     - cron: '0 13 * * 0-4'  # Runs at 1 PM UTC, equivalent to 4 PM Riyadh time, from Sunday to Thursday
   
