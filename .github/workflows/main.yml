@@ -24,6 +24,7 @@ jobs:
           pip install bs4
           pip install pydrive
           pip install requests
+          pip install yfinance
 
       - name: Install Google Chrome
         run: |
