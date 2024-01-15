@@ -1,21 +1,21 @@
 import csv
 import yfinance as yf
 import os
-import requests
+import logging
 
-# GitHub repository information
-github_username = 'SoloSaudiDeveloper-shares'
-github_repo = 'stockchart'
-github_pat = 'YOUR_PERSONAL_ACCESS_TOKEN'  # Replace with your PAT
+# Setup logging
+logging.basicConfig(level=logging.INFO)
 
 def update_csv_file(symbol, data):
-    csv_file_path = f'charts/{symbol}/financial_data.csv'
+    folder_path = create_or_locate_folder(symbol)
+    csv_file_path = f'{folder_path}/financial_data.csv'
     
     with open(csv_file_path, mode='w', newline='') as file:
         writer = csv.writer(file)
         writer.writerow(['Date', 'Open', 'High', 'Low', 'Close', 'Volume', 'Dividends', 'Stock Splits'])
         for date, row in data.iterrows():
             writer.writerow([date, row['Open'], row['High'], row['Low'], row['Close'], row['Volume'], row['Dividends'], row['Stock Splits']])
+    logging.info(f"CSV file updated for {symbol}")
 
 def create_or_locate_folder(symbol):
     folder_path = os.path.join("charts", symbol)
@@ -24,10 +24,13 @@ def create_or_locate_folder(symbol):
     return folder_path
 
 def fetch_financial_data(symbol):
-    stock = yf.Ticker(symbol)
-    # Get historical market data, here max is used to get all available data
-    data = stock.history(period="max")
-    return data
+    try:
+        stock = yf.Ticker(symbol)
+        data = stock.history(period="max")
+        return data
+    except Exception as e:
+        logging.error(f"Error fetching data for {symbol}: {e}")
+        return None
 
 # Read symbols from the CSV file
 csv_file_path = 'Symbols.csv'
@@ -37,16 +40,18 @@ try:
         csv_reader = csv.reader(csvfile)
         next(csv_reader, None)  # Skip the header if there is one
         symbols = [row[0] for row in csv_reader]
-    print(f"Symbols loaded: {symbols}")
+    logging.info(f"Symbols loaded: {symbols}")
 except FileNotFoundError:
-    print(f"Error: File not found - {csv_file_path}")
+    logging.error(f"Error: File not found - {csv_file_path}")
 
 # Process each symbol
 if symbols:
     for symbol in symbols:
-        print(f"Processing symbol {symbol}...")
-        folder_path = create_or_locate_folder(symbol)
+        logging.info(f"Processing symbol {symbol}...")
         data = fetch_financial_data(symbol)
-        update_csv_file(symbol, data)
+        if data is not None:
+            update_csv_file(symbol, data)
+        else:
+            logging.error(f"No data fetched for {symbol}.")
 else:
-    print("No symbols to process.")
+    logging.info("No symbols to process.")
