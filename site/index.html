@@ -1,0 +1,63 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Tawzi Dividend Tracker</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Saudi stock dividends: upcoming payouts, yields, payment history and projected portfolio income.">
+<meta name="theme-color" content="#0b6e4f">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icon-192.png">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Arabic:wght@400;500;600&family=Readex+Pro:wght@500;600&display=swap">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<header class="topbar">
+  <div class="topbar-inner gutter">
+    <a class="brand" href="#home">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true">
+        <rect width="32" height="32" rx="8" fill="var(--accent)"/>
+        <rect x="8" y="17" width="4" height="7" rx="1.5" fill="var(--accent-ink)"/>
+        <rect x="14" y="13" width="4" height="11" rx="1.5" fill="var(--accent-ink)"/>
+        <rect x="20" y="8" width="4" height="16" rx="1.5" fill="var(--accent-ink)"/>
+      </svg>
+      <span><span class="brand-name">Tawzi</span><span class="brand-tag">Saudi dividends</span></span>
+    </a>
+    <nav class="topnav" aria-label="Main">
+      <a href="#home" data-tab="home">Today</a>
+      <a href="#screener" data-tab="screener">Screener</a>
+      <a href="#portfolio" data-tab="portfolio">Portfolio</a>
+    </nav>
+  </div>
+</header>
+
+<main id="app" class="gutter" aria-live="polite">
+  <p class="loading">Loading dividends…</p>
+</main>
+
+<footer class="site-foot gutter">
+  Prototype. Not affiliated with Saudi Exchange. Data may be delayed or incomplete and is not investment advice.
+</footer>
+
+<nav class="tabbar gutter" aria-label="Main">
+  <a href="#home" data-tab="home">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><rect x="3.5" y="5" width="17" height="15" rx="2.5"/><path d="M3.5 10h17M8 3v4M16 3v4"/></svg>
+    Today
+  </a>
+  <a href="#screener" data-tab="screener">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M4 6h16M7 12h10M10 18h4"/></svg>
+    Screener
+  </a>
+  <a href="#portfolio" data-tab="portfolio">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true"><path d="M5 19V11M12 19V5M19 19v-6"/></svg>
+    Portfolio
+  </a>
+</nav>
+
+<script src="app.js"></script>
+</body>
+</html>
